@@ -2,7 +2,6 @@ import { useState } from 'react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { 
   Users, 
   BookOpen, 
@@ -93,27 +92,46 @@ export function InstructorDashboard() {
         </div>
       </div>
 
-      <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
-        <TabsList>
-          <TabsTrigger value="overview" className="flex items-center gap-2">
+      <div className="flex flex-col space-y-4">
+        {/* Navigation Buttons */}
+        <div className="flex space-x-2 border-b">
+          <Button 
+            variant={activeTab === 'overview' ? 'default' : 'ghost'}
+            onClick={() => setActiveTab('overview')}
+            className="flex items-center gap-2"
+          >
             <Users className="h-4 w-4" />
             Dashboard
-          </TabsTrigger>
-          <TabsTrigger value="students" className="flex items-center gap-2">
+          </Button>
+          <Button 
+            variant={activeTab === 'students' ? 'default' : 'ghost'}
+            onClick={() => setActiveTab('students')}
+            className="flex items-center gap-2"
+          >
             <Users className="h-4 w-4" />
             Students
-          </TabsTrigger>
-          <TabsTrigger value="lessons" className="flex items-center gap-2">
+          </Button>
+          <Button 
+            variant={activeTab === 'lessons' ? 'default' : 'ghost'}
+            onClick={() => setActiveTab('lessons')}
+            className="flex items-center gap-2"
+          >
             <FileText className="h-4 w-4" />
             Lessons
-          </TabsTrigger>
-          <TabsTrigger value="endorsements" className="flex items-center gap-2">
+          </Button>
+          <Button 
+            variant={activeTab === 'endorsements' ? 'default' : 'ghost'}
+            onClick={() => setActiveTab('endorsements')}
+            className="flex items-center gap-2"
+          >
             <Certificate className="h-4 w-4" />
             Endorsements
-          </TabsTrigger>
-        </TabsList>
+          </Button>
+        </div>
 
-        <TabsContent value="overview" className="space-y-6">
+        {/* Content based on active tab */}
+        {activeTab === 'overview' && (
+          <div className="space-y-6">
           {/* Key Metrics */}
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
             <Card>
@@ -255,9 +273,10 @@ export function InstructorDashboard() {
               </CardContent>
             </Card>
           </div>
-        </TabsContent>
+        )}
 
-        <TabsContent value="students" className="space-y-6">
+        {activeTab === 'students' && (
+          <div className="space-y-6">
           {/* Students List - Simplified version for navigation */}
           <Card>
             <CardHeader>
@@ -299,16 +318,16 @@ export function InstructorDashboard() {
               </div>
             </CardContent>
           </Card>
-        </TabsContent>
+        )}
 
-        <TabsContent value="lessons">
+        {activeTab === 'lessons' && (
           <LessonsManager />
-        </TabsContent>
+        )}
 
-        <TabsContent value="endorsements">
+        {activeTab === 'endorsements' && (
           <EndorsementsManager />
-        </TabsContent>
-      </Tabs>
+        )}
+      </div>
     </div>
   )
 }
