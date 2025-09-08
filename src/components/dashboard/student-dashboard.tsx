@@ -7,7 +7,9 @@ import {
   CheckCircle, 
   Award,
   TrendingUp,
-  Calendar
+  Calendar,
+  Airplane,
+  Target
 } from '@phosphor-icons/react'
 
 export function StudentDashboard() {
@@ -46,60 +48,73 @@ export function StudentDashboard() {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h2 className="text-3xl font-bold">Training Dashboard</h2>
-        <p className="text-muted-foreground">Track your flight training progress</p>
+      <div className="relative">
+        <div className="absolute top-0 right-0 opacity-10">
+          <Airplane className="h-16 w-16 text-accent" />
+        </div>
+        <h2 className="text-3xl font-bold bg-gradient-to-r from-foreground to-accent bg-clip-text text-transparent">
+          Flight Training Dashboard
+        </h2>
+        <p className="text-muted-foreground">Your journey to the skies - track every milestone</p>
       </div>
 
       {/* Progress Overview */}
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
-        <Card>
+        <Card className="bg-gradient-to-br from-card to-card/80 backdrop-blur-sm border-border/50 aviation-glow card-hover">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Training Progress</CardTitle>
-            <TrendingUp className="h-4 w-4 text-muted-foreground" />
+            <CardTitle className="text-sm font-medium text-foreground">Training Progress</CardTitle>
+            <div className="p-2 bg-primary/20 rounded-full">
+              <TrendingUp className="h-4 w-4 text-primary" />
+            </div>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{studentProgress.percentComplete}%</div>
-            <Progress value={studentProgress.percentComplete} className="mt-2" />
+            <div className="text-2xl font-bold text-accent">{studentProgress.percentComplete}%</div>
+            <Progress value={studentProgress.percentComplete} className="mt-2 h-2 progress-aviation" />
             <p className="text-xs text-muted-foreground mt-2">
-              {studentProgress.completedLessons} of {studentProgress.totalLessons} lessons
+              {studentProgress.completedLessons} of {studentProgress.totalLessons} lessons completed
             </p>
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="bg-gradient-to-br from-card to-card/80 backdrop-blur-sm border-border/50 aviation-glow card-hover">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Completed Lessons</CardTitle>
-            <CheckCircle className="h-4 w-4 text-muted-foreground" />
+            <CardTitle className="text-sm font-medium text-foreground">Flight Hours</CardTitle>
+            <div className="p-2 bg-accent/20 rounded-full">
+              <Clock className="h-4 w-4 text-accent" />
+            </div>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{studentProgress.completedLessons}</div>
+            <div className="text-2xl font-bold text-accent">{studentProgress.completedLessons * 1.5}</div>
             <p className="text-xs text-muted-foreground">
-              Flight and ground instruction
+              Flight and ground instruction hours
             </p>
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="bg-gradient-to-br from-card to-card/80 backdrop-blur-sm border-border/50 aviation-glow card-hover">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Active Endorsements</CardTitle>
-            <Award className="h-4 w-4 text-muted-foreground" />
+            <CardTitle className="text-sm font-medium text-foreground">Endorsements</CardTitle>
+            <div className="p-2 bg-primary/20 rounded-full">
+              <Award className="h-4 w-4 text-primary" />
+            </div>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{studentProgress.endorsements.length}</div>
+            <div className="text-2xl font-bold text-accent">{studentProgress.endorsements.length}</div>
             <p className="text-xs text-muted-foreground">
-              Current valid endorsements
+              Active flight endorsements
             </p>
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="bg-gradient-to-br from-card to-card/80 backdrop-blur-sm border-border/50 aviation-glow card-hover">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Next Lesson</CardTitle>
-            <Calendar className="h-4 w-4 text-muted-foreground" />
+            <CardTitle className="text-sm font-medium text-foreground">Next Flight</CardTitle>
+            <div className="p-2 bg-accent/20 rounded-full aviation-pulse">
+              <Calendar className="h-4 w-4 text-accent" />
+            </div>
           </CardHeader>
           <CardContent>
-            <div className="text-sm font-bold">{studentProgress.nextLessonDate}</div>
+            <div className="text-sm font-bold text-primary">{studentProgress.nextLessonDate}</div>
             <p className="text-xs text-muted-foreground">
               {studentProgress.nextLesson}
             </p>
@@ -109,25 +124,27 @@ export function StudentDashboard() {
 
       <div className="grid gap-6 md:grid-cols-2">
         {/* Recent Lessons */}
-        <Card>
+        <Card className="bg-gradient-to-br from-card to-card/80 backdrop-blur-sm border-border/50 card-hover">
           <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <BookOpen className="h-5 w-5" />
-              Recent Lessons
+            <CardTitle className="flex items-center gap-2 text-foreground">
+              <div className="p-2 bg-primary/20 rounded-full">
+                <BookOpen className="h-5 w-5 text-primary" />
+              </div>
+              Recent Flight Lessons
             </CardTitle>
             <CardDescription>Your latest training activities</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
               {studentProgress.recentLessons.map((lesson) => (
-                <div key={lesson.id} className="flex items-center justify-between">
+                <div key={lesson.id} className="flex items-center justify-between p-3 bg-muted/30 rounded-lg border border-border/30">
                   <div>
-                    <p className="font-medium">{lesson.title}</p>
+                    <p className="font-medium text-foreground">{lesson.title}</p>
                     <p className="text-sm text-muted-foreground">
                       {lesson.date} • {lesson.instructor}
                     </p>
                   </div>
-                  <Badge variant="default">
+                  <Badge variant="default" className="bg-primary/20 text-primary border-primary/30">
                     <CheckCircle className="h-3 w-3 mr-1" />
                     Completed
                   </Badge>
@@ -138,25 +155,30 @@ export function StudentDashboard() {
         </Card>
 
         {/* Endorsements */}
-        <Card>
+        <Card className="bg-gradient-to-br from-card to-card/80 backdrop-blur-sm border-border/50 card-hover">
           <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Award className="h-5 w-5" />
-              Active Endorsements
+            <CardTitle className="flex items-center gap-2 text-foreground">
+              <div className="p-2 bg-accent/20 rounded-full">
+                <Award className="h-5 w-5 text-accent" />
+              </div>
+              Flight Endorsements
             </CardTitle>
-            <CardDescription>Your current flight endorsements</CardDescription>
+            <CardDescription>Your current flight authorizations</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
               {studentProgress.endorsements.map((endorsement) => (
-                <div key={endorsement.id} className="flex items-center justify-between">
+                <div key={endorsement.id} className="flex items-center justify-between p-3 bg-muted/30 rounded-lg border border-border/30">
                   <div>
-                    <p className="font-medium">{endorsement.title}</p>
+                    <p className="font-medium text-foreground">{endorsement.title}</p>
                     <p className="text-sm text-muted-foreground">
                       Issued {endorsement.issuedDate} by {endorsement.instructor}
                     </p>
                   </div>
-                  <Badge variant="default">Active</Badge>
+                  <Badge variant="default" className="bg-accent/20 text-accent border-accent/30">
+                    <Target className="h-3 w-3 mr-1" />
+                    Active
+                  </Badge>
                 </div>
               ))}
             </div>

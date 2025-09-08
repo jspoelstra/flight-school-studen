@@ -13,7 +13,11 @@ import {
   Plus,
   Settings,
   BarChart3,
-  AlertTriangle
+  AlertTriangle,
+  Airplane,
+  Tower,
+  Gauge,
+  MapPin
 } from '@phosphor-icons/react'
 
 export function AdminDashboard() {
@@ -30,13 +34,13 @@ export function AdminDashboard() {
       {
         id: '1',
         type: 'student_enrolled',
-        description: 'New student enrolled: Alex Johnson',
+        description: 'New student pilot enrolled: Alex Johnson',
         timestamp: '2 hours ago'
       },
       {
         id: '2',
         type: 'stage_check',
-        description: 'Stage check completed: Mike Student (Pass)',
+        description: 'Solo flight test completed: Mike Student (Pass)',
         timestamp: '4 hours ago'
       },
       {
@@ -56,13 +60,13 @@ export function AdminDashboard() {
       {
         id: '1',
         type: 'warning',
-        message: '3 students have medical certificates expiring within 30 days',
+        message: '3 pilots have medical certificates expiring within 30 days',
         action: 'Review Expirations'
       },
       {
         id: '2',
         type: 'info',
-        message: '5 draft lessons pending finalization for >24 hours',
+        message: '5 flight reports pending finalization for >24 hours',
         action: 'Notify Instructors'
       }
     ]
@@ -70,38 +74,45 @@ export function AdminDashboard() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between relative">
+        <div className="absolute top-0 right-0 opacity-10">
+          <Tower className="h-16 w-16 text-accent" />
+        </div>
         <div>
-          <h2 className="text-3xl font-bold">Administration Dashboard</h2>
-          <p className="text-muted-foreground">Flight school operations overview</p>
+          <h2 className="text-3xl font-bold bg-gradient-to-r from-foreground to-accent bg-clip-text text-transparent">
+            Flight Operations Command
+          </h2>
+          <p className="text-muted-foreground">Aviation training academy oversight and management</p>
         </div>
         <div className="flex gap-2">
-          <Button variant="outline" className="gap-2">
+          <Button variant="outline" className="gap-2 border-border/50 hover:bg-muted/50">
             <Settings className="h-4 w-4" />
-            Settings
+            Flight Ops
           </Button>
-          <Button className="gap-2" onClick={() => setIsAddStudentOpen(true)}>
+          <Button className="gap-2 bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90" onClick={() => setIsAddStudentOpen(true)}>
             <Plus className="h-4 w-4" />
-            Add Student
+            Enroll Pilot
           </Button>
         </div>
       </div>
 
       {/* System Alerts */}
       {adminData.alerts.length > 0 && (
-        <Card className="border-accent">
+        <Card className="border-destructive/30 bg-gradient-to-br from-card to-card/80 backdrop-blur-sm">
           <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-accent">
-              <AlertTriangle className="h-5 w-5" />
-              System Alerts
+            <CardTitle className="flex items-center gap-2 text-destructive">
+              <div className="p-2 bg-destructive/20 rounded-full">
+                <AlertTriangle className="h-5 w-5" />
+              </div>
+              Flight Safety Alerts
             </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="space-y-3">
               {adminData.alerts.map((alert) => (
-                <div key={alert.id} className="flex items-center justify-between">
-                  <p className="text-sm">{alert.message}</p>
-                  <Button variant="outline" size="sm">
+                <div key={alert.id} className="flex items-center justify-between p-3 bg-muted/30 rounded-lg border border-border/30">
+                  <p className="text-sm text-foreground">{alert.message}</p>
+                  <Button variant="outline" size="sm" className="border-accent/30 hover:bg-accent/10">
                     {alert.action}
                   </Button>
                 </div>
@@ -113,52 +124,60 @@ export function AdminDashboard() {
 
       {/* Key Metrics */}
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
-        <Card>
+        <Card className="bg-gradient-to-br from-card to-card/80 backdrop-blur-sm border-border/50 aviation-glow">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Students</CardTitle>
-            <Users className="h-4 w-4 text-muted-foreground" />
+            <CardTitle className="text-sm font-medium text-foreground">Student Pilots</CardTitle>
+            <div className="p-2 bg-primary/20 rounded-full">
+              <Users className="h-4 w-4 text-primary" />
+            </div>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{adminData.totalStudents}</div>
+            <div className="text-2xl font-bold text-accent">{adminData.totalStudents}</div>
             <p className="text-xs text-muted-foreground">
-              +{adminData.metrics.studentsThisMonth} this month
+              +{adminData.metrics.studentsThisMonth} new this month
             </p>
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="bg-gradient-to-br from-card to-card/80 backdrop-blur-sm border-border/50 aviation-glow">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Active Instructors</CardTitle>
-            <BookOpen className="h-4 w-4 text-muted-foreground" />
+            <CardTitle className="text-sm font-medium text-foreground">Flight Instructors</CardTitle>
+            <div className="p-2 bg-accent/20 rounded-full">
+              <Airplane className="h-4 w-4 text-accent" />
+            </div>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{adminData.activeInstructors}</div>
+            <div className="text-2xl font-bold text-accent">{adminData.activeInstructors}</div>
             <p className="text-xs text-muted-foreground">
               Certified flight instructors
             </p>
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="bg-gradient-to-br from-card to-card/80 backdrop-blur-sm border-border/50 aviation-glow">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Completion Rate</CardTitle>
-            <TrendingUp className="h-4 w-4 text-muted-foreground" />
+            <CardTitle className="text-sm font-medium text-foreground">Success Rate</CardTitle>
+            <div className="p-2 bg-primary/20 rounded-full">
+              <TrendingUp className="h-4 w-4 text-primary" />
+            </div>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{adminData.completionRate}%</div>
-            <Progress value={adminData.completionRate} className="mt-2" />
+            <div className="text-2xl font-bold text-accent">{adminData.completionRate}%</div>
+            <Progress value={adminData.completionRate} className="mt-2 h-2" />
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="bg-gradient-to-br from-card to-card/80 backdrop-blur-sm border-border/50 aviation-glow">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Lessons</CardTitle>
-            <BarChart3 className="h-4 w-4 text-muted-foreground" />
+            <CardTitle className="text-sm font-medium text-foreground">Flight Hours</CardTitle>
+            <div className="p-2 bg-accent/20 rounded-full">
+              <Gauge className="h-4 w-4 text-accent" />
+            </div>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{adminData.totalLessons.toLocaleString()}</div>
+            <div className="text-2xl font-bold text-accent">{adminData.totalLessons.toLocaleString()}</div>
             <p className="text-xs text-muted-foreground">
-              Flight and ground instruction
+              Total instruction hours logged
             </p>
           </CardContent>
         </Card>
@@ -166,52 +185,61 @@ export function AdminDashboard() {
 
       {/* Performance Metrics */}
       <div className="grid gap-6 md:grid-cols-3">
-        <Card>
+        <Card className="bg-gradient-to-br from-card to-card/80 backdrop-blur-sm border-border/50">
           <CardHeader>
-            <CardTitle className="text-lg">Training Metrics</CardTitle>
-            <CardDescription>Key performance indicators</CardDescription>
+            <CardTitle className="text-lg flex items-center gap-2 text-foreground">
+              <div className="p-2 bg-primary/20 rounded-full">
+                <BarChart3 className="h-5 w-5 text-primary" />
+              </div>
+              Training Metrics
+            </CardTitle>
+            <CardDescription>Academy performance indicators</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
-              <div className="flex justify-between">
-                <span className="text-sm">Average Progress</span>
-                <span className="font-medium">{adminData.metrics.averageProgress}%</span>
+              <div className="flex justify-between p-3 bg-muted/30 rounded-lg">
+                <span className="text-sm text-foreground">Average Progress</span>
+                <span className="font-medium text-accent">{adminData.metrics.averageProgress}%</span>
               </div>
-              <div className="flex justify-between">
-                <span className="text-sm">Pass Rate</span>
-                <span className="font-medium">{adminData.metrics.passRate}%</span>
+              <div className="flex justify-between p-3 bg-muted/30 rounded-lg">
+                <span className="text-sm text-foreground">Check Ride Pass Rate</span>
+                <span className="font-medium text-accent">{adminData.metrics.passRate}%</span>
               </div>
-              <div className="flex justify-between">
-                <span className="text-sm">Retention Rate</span>
-                <span className="font-medium">{adminData.metrics.retentionRate}%</span>
+              <div className="flex justify-between p-3 bg-muted/30 rounded-lg">
+                <span className="text-sm text-foreground">Student Retention</span>
+                <span className="font-medium text-accent">{adminData.metrics.retentionRate}%</span>
               </div>
             </div>
           </CardContent>
         </Card>
 
-        <Card className="md:col-span-2">
+        <Card className="md:col-span-2 bg-gradient-to-br from-card to-card/80 backdrop-blur-sm border-border/50">
           <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Award className="h-5 w-5" />
-              Recent Activity
+            <CardTitle className="flex items-center gap-2 text-foreground">
+              <div className="p-2 bg-accent/20 rounded-full">
+                <Award className="h-5 w-5 text-accent" />
+              </div>
+              Flight Activity Log
             </CardTitle>
-            <CardDescription>Latest system events and milestones</CardDescription>
+            <CardDescription>Recent training milestones and system events</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
               {adminData.recentActivity.map((activity) => (
-                <div key={activity.id} className="flex items-center justify-between">
+                <div key={activity.id} className="flex items-center justify-between p-3 bg-muted/30 rounded-lg border border-border/30">
                   <div>
-                    <p className="text-sm font-medium">{activity.description}</p>
+                    <p className="text-sm font-medium text-foreground">{activity.description}</p>
                     <p className="text-xs text-muted-foreground">{activity.timestamp}</p>
                   </div>
                   <Badge 
-                    variant={
-                      activity.type === 'student_enrolled' ? 'default' : 
-                      activity.type === 'stage_check' ? 'secondary' : 
-                      'outline'
+                    variant="outline"
+                    className={
+                      activity.type === 'student_enrolled' ? 'bg-primary/20 text-primary border-primary/30' : 
+                      activity.type === 'stage_check' ? 'bg-accent/20 text-accent border-accent/30' : 
+                      'bg-muted/20 text-muted-foreground border-border/30'
                     }
                   >
+                    <MapPin className="h-3 w-3 mr-1" />
                     {activity.type.replace('_', ' ')}
                   </Badge>
                 </div>

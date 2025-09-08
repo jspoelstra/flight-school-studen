@@ -10,7 +10,9 @@ import {
   Settings, 
   LogOut,
   Plane,
-  User
+  User,
+  Compass,
+  CloudSun
 } from '@phosphor-icons/react'
 import { cn } from '@/lib/utils'
 
@@ -74,28 +76,52 @@ export function Layout({ children }: LayoutProps) {
   )
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background relative">
+      {/* Aviation background elements */}
+      <div className="fixed inset-0 pointer-events-none overflow-hidden z-0">
+        {/* Horizon line effect */}
+        <div className="absolute top-1/3 left-0 right-0 h-px bg-gradient-to-r from-transparent via-accent/30 to-transparent" />
+        
+        {/* Compass rose decoration */}
+        <div className="absolute top-20 right-20 opacity-10">
+          <Compass className="h-32 w-32 text-accent animate-spin" style={{ animationDuration: '60s' }} />
+        </div>
+        
+        {/* Cloud elements */}
+        <div className="absolute top-16 left-1/4 opacity-5">
+          <CloudSun className="h-24 w-24 text-white" />
+        </div>
+        <div className="absolute top-32 right-1/3 opacity-5">
+          <CloudSun className="h-20 w-20 text-white" />
+        </div>
+      </div>
+
       {/* Header */}
-      <header className="border-b bg-card">
+      <header className="relative z-10 border-b bg-card/90 backdrop-blur-sm aviation-glow">
         <div className="flex h-16 items-center px-6">
           <div className="flex items-center gap-3">
-            <div className="flex h-8 w-8 items-center justify-center rounded bg-primary">
-              <Plane className="h-5 w-5 text-primary-foreground" />
+            <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-gradient-to-br from-primary to-accent shadow-lg">
+              <Plane className="h-6 w-6 text-primary-foreground" />
             </div>
-            <h1 className="text-xl font-semibold">Flight School</h1>
+            <div>
+              <h1 className="text-xl font-bold bg-gradient-to-r from-foreground to-accent bg-clip-text text-transparent">
+                SkyWings Academy
+              </h1>
+              <p className="text-xs text-muted-foreground">Professional Flight Training</p>
+            </div>
           </div>
           
           <div className="ml-auto flex items-center gap-4">
-            <div className="flex items-center gap-2 text-sm">
-              <User className="h-4 w-4" />
+            <div className="flex items-center gap-2 text-sm bg-muted/50 rounded-lg px-3 py-2">
+              <User className="h-4 w-4 text-accent" />
               <span className="font-medium">{user.name}</span>
-              <span className="text-muted-foreground">({user.role})</span>
+              <span className="text-muted-foreground capitalize">({user.role})</span>
             </div>
             <Button
               variant="ghost"
               size="sm"
               onClick={logout}
-              className="gap-2"
+              className="gap-2 hover:bg-destructive/10 hover:text-destructive"
             >
               <LogOut className="h-4 w-4" />
               Sign Out
@@ -104,9 +130,9 @@ export function Layout({ children }: LayoutProps) {
         </div>
       </header>
 
-      <div className="flex">
+      <div className="flex relative z-10">
         {/* Sidebar */}
-        <aside className="w-64 border-r bg-card">
+        <aside className="w-64 border-r bg-card/90 backdrop-blur-sm">
           <nav className="p-4">
             <ul className="space-y-2">
               {filteredNavigation.map((item) => (
@@ -114,8 +140,9 @@ export function Layout({ children }: LayoutProps) {
                   <Button
                     variant="ghost"
                     className={cn(
-                      "w-full justify-start gap-3",
-                      "hover:bg-accent hover:text-accent-foreground"
+                      "w-full justify-start gap-3 text-left",
+                      "hover:bg-accent/20 hover:text-accent transition-all duration-200",
+                      "border border-transparent hover:border-accent/30"
                     )}
                   >
                     <item.icon className="h-4 w-4" />
@@ -128,8 +155,10 @@ export function Layout({ children }: LayoutProps) {
         </aside>
 
         {/* Main Content */}
-        <main className="flex-1 p-6">
-          {children}
+        <main className="flex-1 p-6 relative">
+          <div className="relative z-10">
+            {children}
+          </div>
         </main>
       </div>
       

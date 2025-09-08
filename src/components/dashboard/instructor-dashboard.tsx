@@ -11,7 +11,10 @@ import {
   AlertCircle,
   Calendar,
   FileText,
-  Certificate
+  Certificate,
+  Airplane,
+  Compass,
+  Target
 } from '@phosphor-icons/react'
 import { LessonsManager } from '@/components/lessons'
 import { StudentDetailView } from '@/components/students'
@@ -85,23 +88,28 @@ export function InstructorDashboard() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between relative">
+        <div className="absolute top-0 right-0 opacity-10">
+          <Airplane className="h-16 w-16 text-accent" />
+        </div>
         <div>
-          <h2 className="text-3xl font-bold">Instructor Dashboard</h2>
-          <p className="text-muted-foreground">Manage your students and lessons</p>
+          <h2 className="text-3xl font-bold bg-gradient-to-r from-foreground to-accent bg-clip-text text-transparent">
+            Flight Instructor Command Center
+          </h2>
+          <p className="text-muted-foreground">Guide the next generation of aviators</p>
         </div>
       </div>
 
       <div className="flex flex-col space-y-4">
         {/* Navigation Buttons */}
-        <div className="flex space-x-2 border-b">
+        <div className="flex space-x-2 border-b border-border/30 pb-4">
           <Button 
             variant={activeTab === 'overview' ? 'default' : 'ghost'}
             onClick={() => setActiveTab('overview')}
-            className="flex items-center gap-2"
+            className="flex items-center gap-2 aviation-glow"
           >
-            <Users className="h-4 w-4" />
-            Dashboard
+            <Compass className="h-4 w-4" />
+            Command Center
           </Button>
           <Button 
             variant={activeTab === 'students' ? 'default' : 'ghost'}
@@ -109,7 +117,7 @@ export function InstructorDashboard() {
             className="flex items-center gap-2"
           >
             <Users className="h-4 w-4" />
-            Students
+            Student Pilots
           </Button>
           <Button 
             variant={activeTab === 'lessons' ? 'default' : 'ghost'}
@@ -117,7 +125,7 @@ export function InstructorDashboard() {
             className="flex items-center gap-2"
           >
             <FileText className="h-4 w-4" />
-            Lessons
+            Flight Logs
           </Button>
           <Button 
             variant={activeTab === 'endorsements' ? 'default' : 'ghost'}
@@ -134,54 +142,62 @@ export function InstructorDashboard() {
           <div className="space-y-6">
             {/* Key Metrics */}
             <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
-            <Card>
+            <Card className="bg-gradient-to-br from-card to-card/80 backdrop-blur-sm border-border/50 aviation-glow">
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Total Students</CardTitle>
-                <Users className="h-4 w-4 text-muted-foreground" />
+                <CardTitle className="text-sm font-medium text-foreground">Student Pilots</CardTitle>
+                <div className="p-2 bg-primary/20 rounded-full">
+                  <Users className="h-4 w-4 text-primary" />
+                </div>
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold">{instructorData.totalStudents}</div>
+                <div className="text-2xl font-bold text-accent">{instructorData.totalStudents}</div>
                 <p className="text-xs text-muted-foreground">
-                  Active training students
+                  Under your instruction
                 </p>
               </CardContent>
             </Card>
 
-            <Card>
+            <Card className="bg-gradient-to-br from-card to-card/80 backdrop-blur-sm border-border/50 aviation-glow">
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Active Lessons</CardTitle>
-                <BookOpen className="h-4 w-4 text-muted-foreground" />
+                <CardTitle className="text-sm font-medium text-foreground">Active Flights</CardTitle>
+                <div className="p-2 bg-accent/20 rounded-full">
+                  <BookOpen className="h-4 w-4 text-accent" />
+                </div>
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold">{instructorData.activeLessons}</div>
+                <div className="text-2xl font-bold text-accent">{instructorData.activeLessons}</div>
                 <p className="text-xs text-muted-foreground">
-                  In progress this week
+                  Completed this week
                 </p>
               </CardContent>
             </Card>
 
-            <Card>
+            <Card className="bg-gradient-to-br from-card to-card/80 backdrop-blur-sm border-border/50 aviation-glow">
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Draft Lessons</CardTitle>
-                <Clock className="h-4 w-4 text-accent" />
+                <CardTitle className="text-sm font-medium text-foreground">Pending Reports</CardTitle>
+                <div className="p-2 bg-destructive/20 rounded-full">
+                  <Clock className="h-4 w-4 text-destructive" />
+                </div>
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold text-accent">{instructorData.draftLessons.length}</div>
+                <div className="text-2xl font-bold text-destructive">{instructorData.draftLessons.length}</div>
                 <p className="text-xs text-muted-foreground">
                   Require finalization
                 </p>
               </CardContent>
             </Card>
 
-            <Card>
+            <Card className="bg-gradient-to-br from-card to-card/80 backdrop-blur-sm border-border/50 aviation-glow">
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Upcoming</CardTitle>
-                <Calendar className="h-4 w-4 text-muted-foreground" />
+                <CardTitle className="text-sm font-medium text-foreground">Scheduled</CardTitle>
+                <div className="p-2 bg-primary/20 rounded-full">
+                  <Calendar className="h-4 w-4 text-primary" />
+                </div>
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold">{instructorData.upcomingLessons}</div>
+                <div className="text-2xl font-bold text-primary">{instructorData.upcomingLessons}</div>
                 <p className="text-xs text-muted-foreground">
-                  Scheduled this week
+                  Flights this week
                 </p>
               </CardContent>
             </Card>
@@ -189,27 +205,32 @@ export function InstructorDashboard() {
 
           <div className="grid gap-6 md:grid-cols-2">
             {/* Student Overview */}
-            <Card>
+            <Card className="bg-gradient-to-br from-card to-card/80 backdrop-blur-sm border-border/50">
               <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Users className="h-5 w-5" />
-                  My Students
+                <CardTitle className="flex items-center gap-2 text-foreground">
+                  <div className="p-2 bg-primary/20 rounded-full">
+                    <Users className="h-5 w-5 text-primary" />
+                  </div>
+                  Student Squadron
                 </CardTitle>
-                <CardDescription>Current student roster and progress</CardDescription>
+                <CardDescription>Your current pilot trainees and their progress</CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
                   {instructorData.students.map((student) => (
-                    <div key={student.id} className="flex items-center justify-between">
+                    <div key={student.id} className="flex items-center justify-between p-3 bg-muted/30 rounded-lg border border-border/30">
                       <div className="flex-1">
                         <div className="flex items-center gap-2">
-                          <p className="font-medium">{student.name}</p>
+                          <p className="font-medium text-foreground">{student.name}</p>
                           {student.status === 'stage-check' && (
-                            <Badge variant="secondary">Stage Check Due</Badge>
+                            <Badge variant="secondary" className="bg-accent/20 text-accent border-accent/30">
+                              <Target className="h-3 w-3 mr-1" />
+                              Check Ride Due
+                            </Badge>
                           )}
                         </div>
                         <p className="text-sm text-muted-foreground">
-                          Progress: {student.progress}% • Last: {student.lastLesson}
+                          Progress: {student.progress}% • Last Flight: {student.lastLesson}
                         </p>
                       </div>
                       <Button 
@@ -221,6 +242,7 @@ export function InstructorDashboard() {
                             handleViewStudent(fullStudent)
                           }
                         }}
+                        className="border-primary/30 hover:bg-primary/10"
                       >
                         View
                       </Button>
@@ -231,25 +253,29 @@ export function InstructorDashboard() {
             </Card>
 
             {/* Draft Lessons Alert */}
-            <Card>
+            <Card className="bg-gradient-to-br from-card to-card/80 backdrop-blur-sm border-border/50">
               <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <AlertCircle className="h-5 w-5 text-accent" />
-                  Pending Finalization
+                <CardTitle className="flex items-center gap-2 text-foreground">
+                  <div className="p-2 bg-destructive/20 rounded-full">
+                    <AlertCircle className="h-5 w-5 text-destructive" />
+                  </div>
+                  Flight Reports Pending
                 </CardTitle>
-                <CardDescription>Draft lessons requiring your attention</CardDescription>
+                <CardDescription>Lesson reports requiring your final review</CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
                   {instructorData.draftLessons.length === 0 ? (
-                    <p className="text-center text-muted-foreground py-4">
-                      No draft lessons pending
-                    </p>
+                    <div className="text-center py-8">
+                      <CheckCircle className="h-12 w-12 text-accent mx-auto mb-2" />
+                      <p className="text-muted-foreground">All reports finalized</p>
+                      <p className="text-xs text-muted-foreground">Your logbook is up to date</p>
+                    </div>
                   ) : (
                     instructorData.draftLessons.map((lesson) => (
-                      <div key={lesson.id} className="flex items-center justify-between">
+                      <div key={lesson.id} className="flex items-center justify-between p-3 bg-muted/30 rounded-lg border border-border/30">
                         <div>
-                          <p className="font-medium">{lesson.studentName}</p>
+                          <p className="font-medium text-foreground">{lesson.studentName}</p>
                           <p className="text-sm text-muted-foreground">
                             {lesson.lessonTitle} • {lesson.date}
                           </p>
@@ -263,6 +289,7 @@ export function InstructorDashboard() {
                           variant="outline" 
                           size="sm"
                           onClick={() => setActiveTab('lessons')}
+                          className="border-accent/30 hover:bg-accent/10"
                         >
                           Finalize
                         </Button>
@@ -279,27 +306,32 @@ export function InstructorDashboard() {
         {activeTab === 'students' && (
           <div className="space-y-6">
             {/* Students List - Simplified version for navigation */}
-            <Card>
+            <Card className="bg-gradient-to-br from-card to-card/80 backdrop-blur-sm border-border/50">
               <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Users className="h-5 w-5" />
-                  Student Management
+                <CardTitle className="flex items-center gap-2 text-foreground">
+                  <div className="p-2 bg-primary/20 rounded-full">
+                    <Users className="h-5 w-5 text-primary" />
+                  </div>
+                  Student Pilot Management
                 </CardTitle>
-                <CardDescription>Manage your assigned students</CardDescription>
+                <CardDescription>Manage your assigned aviation students</CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
                   {instructorData.students.map((student) => (
-                    <div key={student.id} className="flex items-center justify-between p-4 border rounded-lg">
+                    <div key={student.id} className="flex items-center justify-between p-4 bg-muted/30 rounded-lg border border-border/30">
                       <div className="flex-1">
                         <div className="flex items-center gap-2">
-                          <p className="font-medium">{student.name}</p>
+                          <p className="font-medium text-foreground">{student.name}</p>
                           {student.status === 'stage-check' && (
-                            <Badge variant="secondary">Stage Check Due</Badge>
+                            <Badge variant="secondary" className="bg-accent/20 text-accent border-accent/30">
+                              <Target className="h-3 w-3 mr-1" />
+                              Check Ride Due
+                            </Badge>
                           )}
                         </div>
                         <p className="text-sm text-muted-foreground">
-                          Progress: {student.progress}% • Last: {student.lastLesson}
+                          Training Progress: {student.progress}% • Last Flight: {student.lastLesson}
                         </p>
                       </div>
                       <Button 
@@ -311,6 +343,7 @@ export function InstructorDashboard() {
                             handleViewStudent(fullStudent)
                           }
                         }}
+                        className="border-primary/30 hover:bg-primary/10"
                       >
                         View Details
                       </Button>
