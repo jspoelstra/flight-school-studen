@@ -1,5 +1,5 @@
 import { useKV } from '@github/spark/hooks'
-import { Student, Lesson, Endorsement, StageCheck } from '@/lib/types'
+import { Student, Lesson, Endorsement, StageCheck, User } from '@/lib/types'
 import { useEffect } from 'react'
 
 export function useSampleData() {
@@ -7,8 +7,40 @@ export function useSampleData() {
   const [lessons, setLessons] = useKV<Lesson[]>('lessons', [])
   const [endorsements, setEndorsements] = useKV<Endorsement[]>('endorsements', [])
   const [stageChecks, setStageChecks] = useKV<StageCheck[]>('stage-checks', [])
+  const [users, setUsers] = useKV<User[]>('users', [])
 
   useEffect(() => {
+    // Initialize users if empty
+    if (users.length === 0) {
+      const sampleUsers: User[] = [
+        {
+          id: 'user1',
+          name: 'Mike Student',
+          email: 'mike.student@email.com',
+          role: 'student',
+          studentId: '1',
+          createdAt: '2024-01-15T00:00:00Z'
+        },
+        {
+          id: 'user2',
+          name: 'Jane Pilot',
+          email: 'jane.pilot@email.com',
+          role: 'student',
+          studentId: '2',
+          createdAt: '2024-02-01T00:00:00Z'
+        },
+        {
+          id: 'user3',
+          name: 'Bob Aviator',
+          email: 'bob.aviator@email.com',
+          role: 'student',
+          studentId: '3',
+          createdAt: '2023-12-01T00:00:00Z'
+        }
+      ]
+      setUsers(sampleUsers)
+    }
+
     // Only initialize if no data exists
     if (students.length === 0) {
       const sampleStudents: Student[] = [
@@ -244,7 +276,7 @@ export function useSampleData() {
       ]
       setStageChecks(sampleStageChecks)
     }
-  }, [students.length, lessons.length, endorsements.length, stageChecks.length, setStudents, setLessons, setEndorsements, setStageChecks])
+  }, [students.length, lessons.length, endorsements.length, stageChecks.length, users.length, setStudents, setLessons, setEndorsements, setStageChecks, setUsers])
 
-  return { students, lessons, endorsements, stageChecks }
+  return { students, lessons, endorsements, stageChecks, users }
 }

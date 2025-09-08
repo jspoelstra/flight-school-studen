@@ -1,7 +1,10 @@
+import { useState } from 'react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Progress } from '@/components/ui/progress'
+import { AddStudentForm } from '@/components/students'
+import { useSampleData } from '@/lib/sample-data'
 import { 
   Users, 
   BookOpen, 
@@ -14,8 +17,12 @@ import {
 } from '@phosphor-icons/react'
 
 export function AdminDashboard() {
+  const [isAddStudentOpen, setIsAddStudentOpen] = useState(false)
+  
+  // Load sample data
+  const { students } = useSampleData()
   const adminData = {
-    totalStudents: 45,
+    totalStudents: students.length,
     activeInstructors: 8,
     totalLessons: 1250,
     completionRate: 87,
@@ -73,7 +80,7 @@ export function AdminDashboard() {
             <Settings className="h-4 w-4" />
             Settings
           </Button>
-          <Button className="gap-2">
+          <Button className="gap-2" onClick={() => setIsAddStudentOpen(true)}>
             <Plus className="h-4 w-4" />
             Add Student
           </Button>
@@ -213,6 +220,12 @@ export function AdminDashboard() {
           </CardContent>
         </Card>
       </div>
+
+      {/* Add Student Form Dialog */}
+      <AddStudentForm 
+        open={isAddStudentOpen} 
+        onOpenChange={setIsAddStudentOpen} 
+      />
     </div>
   )
 }

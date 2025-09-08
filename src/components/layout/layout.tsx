@@ -1,6 +1,7 @@
 import { ReactNode } from 'react'
 import { Button } from '@/components/ui/button'
 import { useAuth } from '@/lib/auth'
+import { Toaster } from '@/components/ui/sonner'
 import { 
   Users, 
   BookOpen, 
@@ -131,6 +132,9 @@ export function Layout({ children }: LayoutProps) {
           {children}
         </main>
       </div>
+      
+      {/* Toast Notifications */}
+      <Toaster />
     </div>
   )
 }
