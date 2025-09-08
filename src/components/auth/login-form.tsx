@@ -5,7 +5,8 @@ import { Label } from '@/components/ui/label'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { useAuth } from '@/lib/auth'
-import { Plane, CloudSun, Compass } from '@phosphor-icons/react'
+import { CloudSun, Compass } from '@phosphor-icons/react'
+import slingIcon from '@/assets/images/sling-icon.jpg'
 
 export function LoginForm() {
   const [email, setEmail] = useState('')
@@ -55,8 +56,15 @@ export function LoginForm() {
 
       <Card className="w-full max-w-md relative z-10 bg-card/90 backdrop-blur-sm aviation-glow border-border/50">
         <CardHeader className="text-center">
-          <div className="mx-auto mb-4 flex h-20 w-20 items-center justify-center rounded-full bg-gradient-to-br from-primary via-accent to-primary shadow-2xl">
-            <Plane className="h-10 w-10 text-primary-foreground" />
+          <div className="mx-auto mb-6 relative group">
+            <div className="absolute inset-0 bg-gradient-to-br from-primary via-accent to-primary rounded-2xl blur-lg opacity-50 group-hover:opacity-70 transition-opacity duration-300" />
+            <div className="relative bg-gradient-to-br from-primary/20 via-accent/20 to-primary/20 p-3 rounded-2xl border border-accent/30 shadow-2xl backdrop-blur-sm">
+              <img 
+                src={slingIcon} 
+                alt="SkyWings Academy Logo" 
+                className="h-16 w-16 object-contain filter brightness-110 contrast-110 hover:scale-110 transition-transform duration-300"
+              />
+            </div>
           </div>
           <CardTitle className="text-3xl font-bold bg-gradient-to-r from-foreground to-accent bg-clip-text text-transparent">
             SkyWings Academy

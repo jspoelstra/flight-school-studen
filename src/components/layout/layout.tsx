@@ -9,12 +9,12 @@ import {
   BarChart3, 
   Settings, 
   LogOut,
-  Plane,
   User,
   Compass,
   CloudSun
 } from '@phosphor-icons/react'
 import { cn } from '@/lib/utils'
+import slingIcon from '@/assets/images/sling-icon.jpg'
 
 interface LayoutProps {
   children: ReactNode
@@ -100,8 +100,15 @@ export function Layout({ children }: LayoutProps) {
       <header className="relative z-10 border-b bg-card/90 backdrop-blur-sm aviation-glow">
         <div className="flex h-16 items-center px-6">
           <div className="flex items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-gradient-to-br from-primary to-accent shadow-lg">
-              <Plane className="h-6 w-6 text-primary-foreground" />
+            <div className="relative group">
+              <div className="absolute inset-0 bg-gradient-to-br from-primary to-accent rounded-lg blur opacity-50 group-hover:opacity-70 transition-opacity duration-300" />
+              <div className="relative flex h-10 w-10 items-center justify-center rounded-lg bg-gradient-to-br from-primary/20 to-accent/20 border border-accent/30 shadow-lg backdrop-blur-sm">
+                <img 
+                  src={slingIcon} 
+                  alt="SkyWings Academy Logo" 
+                  className="h-6 w-6 object-contain filter brightness-110 contrast-110"
+                />
+              </div>
             </div>
             <div>
               <h1 className="text-xl font-bold bg-gradient-to-r from-foreground to-accent bg-clip-text text-transparent">
