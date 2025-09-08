@@ -132,8 +132,8 @@ export function InstructorDashboard() {
         {/* Content based on active tab */}
         {activeTab === 'overview' && (
           <div className="space-y-6">
-          {/* Key Metrics */}
-          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+            {/* Key Metrics */}
+            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
             <Card>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle className="text-sm font-medium">Total Students</CardTitle>
@@ -272,6 +272,7 @@ export function InstructorDashboard() {
                 </div>
               </CardContent>
             </Card>
+          </div>
           </div>
         )}
 
