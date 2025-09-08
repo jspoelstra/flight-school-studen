@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Progress } from '@/components/ui/progress'
 import { AddStudentForm } from '@/components/students'
+import { CFIExpirations } from '@/components/admin/cfi-expirations'
 import { useSampleData } from '@/lib/sample-data'
 import { 
   Users, 
@@ -22,6 +23,7 @@ import {
 
 export function AdminDashboard() {
   const [isAddStudentOpen, setIsAddStudentOpen] = useState(false)
+  const [isCFIExpirationsOpen, setIsCFIExpirationsOpen] = useState(false)
   
   // Load sample data
   const { students } = useSampleData()
@@ -112,7 +114,16 @@ export function AdminDashboard() {
               {adminData.alerts.map((alert) => (
                 <div key={alert.id} className="flex items-center justify-between p-3 bg-muted/30 rounded-lg border border-border/30">
                   <p className="text-sm text-foreground">{alert.message}</p>
-                  <Button variant="outline" size="sm" className="border-accent/30 hover:bg-accent/10">
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    className="border-accent/30 hover:bg-accent/10"
+                    onClick={() => {
+                      if (alert.action === 'Review Expirations') {
+                        setIsCFIExpirationsOpen(true)
+                      }
+                    }}
+                  >
                     {alert.action}
                   </Button>
                 </div>
@@ -253,6 +264,12 @@ export function AdminDashboard() {
       <AddStudentForm 
         open={isAddStudentOpen} 
         onOpenChange={setIsAddStudentOpen} 
+      />
+
+      {/* CFI Expirations Dialog */}
+      <CFIExpirations
+        open={isCFIExpirationsOpen}
+        onOpenChange={setIsCFIExpirationsOpen}
       />
     </div>
   )
