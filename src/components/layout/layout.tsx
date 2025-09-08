@@ -101,12 +101,12 @@ export function Layout({ children }: LayoutProps) {
         <div className="flex h-16 items-center px-6">
           <div className="flex items-center gap-3">
             <div className="relative group">
-              <div className="absolute inset-0 bg-gradient-to-br from-primary to-accent rounded-lg blur opacity-50 group-hover:opacity-70 transition-opacity duration-300" />
-              <div className="relative flex h-10 w-10 items-center justify-center rounded-lg bg-gradient-to-br from-primary/20 to-accent/20 border border-accent/30 shadow-lg backdrop-blur-sm">
+              <div className="absolute inset-0 bg-gradient-to-br from-primary to-accent rounded-full blur opacity-50 group-hover:opacity-70 transition-opacity duration-300" />
+              <div className="relative h-12 w-12 rounded-full overflow-hidden bg-gradient-to-br from-primary/20 to-accent/20 border-2 border-accent/30 shadow-lg backdrop-blur-sm">
                 <img 
                   src={slingIcon} 
                   alt="SkyWings Academy Logo" 
-                  className="h-6 w-6 object-contain filter brightness-110 contrast-110"
+                  className="h-full w-full object-cover filter brightness-110 contrast-110 scale-110"
                 />
               </div>
             </div>
