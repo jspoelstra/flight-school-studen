@@ -11,10 +11,12 @@ import {
   Plus,
   AlertCircle,
   Calendar,
-  FileText
+  FileText,
+  Certificate
 } from '@phosphor-icons/react'
 import { LessonsManager } from '@/components/lessons'
 import { StudentDetailView } from '@/components/students'
+import { EndorsementsManager } from '@/components/endorsements'
 import { useSampleData } from '@/lib/sample-data'
 import { useKV } from '@github/spark/hooks'
 import { Lesson, Student } from '@/lib/types'
@@ -95,11 +97,19 @@ export function InstructorDashboard() {
         <TabsList>
           <TabsTrigger value="overview" className="flex items-center gap-2">
             <Users className="h-4 w-4" />
-            Overview
+            Dashboard
+          </TabsTrigger>
+          <TabsTrigger value="students" className="flex items-center gap-2">
+            <Users className="h-4 w-4" />
+            Students
           </TabsTrigger>
           <TabsTrigger value="lessons" className="flex items-center gap-2">
             <FileText className="h-4 w-4" />
-            Lesson Records
+            Lessons
+          </TabsTrigger>
+          <TabsTrigger value="endorsements" className="flex items-center gap-2">
+            <Certificate className="h-4 w-4" />
+            Endorsements
           </TabsTrigger>
         </TabsList>
 
@@ -247,8 +257,56 @@ export function InstructorDashboard() {
           </div>
         </TabsContent>
 
+        <TabsContent value="students" className="space-y-6">
+          {/* Students List - Simplified version for navigation */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Users className="h-5 w-5" />
+                Student Management
+              </CardTitle>
+              <CardDescription>Manage your assigned students</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                {instructorData.students.map((student) => (
+                  <div key={student.id} className="flex items-center justify-between p-4 border rounded-lg">
+                    <div className="flex-1">
+                      <div className="flex items-center gap-2">
+                        <p className="font-medium">{student.name}</p>
+                        {student.status === 'stage-check' && (
+                          <Badge variant="secondary">Stage Check Due</Badge>
+                        )}
+                      </div>
+                      <p className="text-sm text-muted-foreground">
+                        Progress: {student.progress}% • Last: {student.lastLesson}
+                      </p>
+                    </div>
+                    <Button 
+                      variant="outline" 
+                      size="sm"
+                      onClick={() => {
+                        const fullStudent = students.find(s => s.id === student.id)
+                        if (fullStudent) {
+                          handleViewStudent(fullStudent)
+                        }
+                      }}
+                    >
+                      View Details
+                    </Button>
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
         <TabsContent value="lessons">
           <LessonsManager />
+        </TabsContent>
+
+        <TabsContent value="endorsements">
+          <EndorsementsManager />
         </TabsContent>
       </Tabs>
     </div>
