@@ -14,12 +14,14 @@ import {
   FileText
 } from '@phosphor-icons/react'
 import { LessonsManager } from '@/components/lessons'
+import { StudentDetailView } from '@/components/students'
 import { useSampleData } from '@/lib/sample-data'
 import { useKV } from '@github/spark/hooks'
-import { Lesson } from '@/lib/types'
+import { Lesson, Student } from '@/lib/types'
 
 export function InstructorDashboard() {
   const [activeTab, setActiveTab] = useState('overview')
+  const [selectedStudent, setSelectedStudent] = useState<Student | null>(null)
   
   // Initialize sample data and get real data from KV store
   useSampleData()
@@ -64,6 +66,20 @@ export function InstructorDashboard() {
         daysOverdue: Math.max(0, daysSinceCreated - 1) // Draft is overdue after 1 day
       }
     })
+  }
+
+  // Handle viewing a specific student
+  const handleViewStudent = (student: Student) => {
+    setSelectedStudent(student)
+  }
+
+  const handleBackToStudents = () => {
+    setSelectedStudent(null)
+  }
+
+  // If a student is selected, show the detail view
+  if (selectedStudent) {
+    return <StudentDetailView student={selectedStudent} onBack={handleBackToStudents} />
   }
 
   return (
@@ -168,7 +184,16 @@ export function InstructorDashboard() {
                           Progress: {student.progress}% • Last: {student.lastLesson}
                         </p>
                       </div>
-                      <Button variant="outline" size="sm">
+                      <Button 
+                        variant="outline" 
+                        size="sm"
+                        onClick={() => {
+                          const fullStudent = students.find(s => s.id === student.id)
+                          if (fullStudent) {
+                            handleViewStudent(fullStudent)
+                          }
+                        }}
+                      >
                         View
                       </Button>
                     </div>

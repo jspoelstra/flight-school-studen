@@ -1,0 +1,1 @@
+export { StudentDetailView } from './student-detail-view'

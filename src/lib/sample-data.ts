@@ -1,10 +1,12 @@
 import { useKV } from '@github/spark/hooks'
-import { Student, Lesson } from '@/lib/types'
+import { Student, Lesson, Endorsement, StageCheck } from '@/lib/types'
 import { useEffect } from 'react'
 
 export function useSampleData() {
   const [students, setStudents] = useKV<Student[]>('students', [])
   const [lessons, setLessons] = useKV<Lesson[]>('lessons', [])
+  const [endorsements, setEndorsements] = useKV<Endorsement[]>('endorsements', [])
+  const [stageChecks, setStageChecks] = useKV<StageCheck[]>('stage-checks', [])
 
   useEffect(() => {
     // Only initialize if no data exists
@@ -168,7 +170,81 @@ export function useSampleData() {
       ]
       setLessons(sampleLessons)
     }
-  }, [students.length, lessons.length, setStudents, setLessons])
 
-  return { students, lessons }
+    // Initialize endorsements if empty
+    if (endorsements.length === 0) {
+      const sampleEndorsements: Endorsement[] = [
+        {
+          id: '1',
+          studentId: '1',
+          instructorId: 'current-instructor',
+          type: 'presolo',
+          title: 'Pre-Solo Written Exam',
+          content: 'I certify that Mike Student has satisfactorily completed the required knowledge areas for solo flight in accordance with FAR 61.87(b).',
+          issuedAt: '2024-01-05T10:00:00Z',
+          hash: 'abc123hash',
+          status: 'active'
+        },
+        {
+          id: '2',
+          studentId: '1',
+          instructorId: 'current-instructor',
+          type: 'solo',
+          title: 'Student Pilot Solo Endorsement',
+          content: 'I certify that Mike Student has received the required training and is competent to conduct solo flights in N12345 at KPAO airport.',
+          issuedAt: '2024-01-12T14:30:00Z',
+          expiresAt: '2024-07-12T14:30:00Z',
+          hash: 'def456hash',
+          status: 'active'
+        },
+        {
+          id: '3',
+          studentId: '2',
+          instructorId: 'current-instructor',
+          type: 'knowledge',
+          title: 'Instrument Rating Knowledge Test',
+          content: 'I certify that Jane Pilot has received the required training and is prepared to take the instrument rating knowledge test.',
+          issuedAt: '2024-01-20T16:00:00Z',
+          hash: 'ghi789hash',
+          status: 'active'
+        }
+      ]
+      setEndorsements(sampleEndorsements)
+    }
+
+    // Initialize stage checks if empty
+    if (stageChecks.length === 0) {
+      const sampleStageChecks: StageCheck[] = [
+        {
+          id: '1',
+          studentId: '1',
+          evaluatorId: 'stage-check-instructor',
+          stage: 'Pre-Solo Stage Check',
+          date: '2024-01-15',
+          outcome: 'pass',
+          notes: 'Student demonstrated proficiency in all required maneuvers. Ready for solo flight.',
+          remediationTasks: [],
+          signedAt: '2024-01-15T17:30:00Z'
+        },
+        {
+          id: '2',
+          studentId: '2',
+          evaluatorId: 'stage-check-instructor',
+          stage: 'Instrument Stage 1 Check',
+          date: '2024-01-22',
+          outcome: 'conditional',
+          notes: 'Good overall performance. Some items need additional practice before proceeding.',
+          remediationTasks: [
+            'Practice holding patterns with wind corrections',
+            'Review ILS approach procedures and minimums',
+            'Additional practice with partial panel approaches'
+          ],
+          signedAt: '2024-01-22T16:45:00Z'
+        }
+      ]
+      setStageChecks(sampleStageChecks)
+    }
+  }, [students.length, lessons.length, endorsements.length, stageChecks.length, setStudents, setLessons, setEndorsements, setStageChecks])
+
+  return { students, lessons, endorsements, stageChecks }
 }
