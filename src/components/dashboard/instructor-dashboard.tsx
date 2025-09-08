@@ -122,7 +122,7 @@ export function InstructorDashboard() {
                 <Clock className="h-4 w-4 text-accent" />
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold text-accent">{instructorData.draftLessons}</div>
+                <div className="text-2xl font-bold text-accent">{instructorData.draftLessons.length}</div>
                 <p className="text-xs text-muted-foreground">
                   Require finalization
                 </p>
