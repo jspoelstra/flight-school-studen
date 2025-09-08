@@ -86,8 +86,7 @@ export function StudentDashboard() {
       {/* Content based on active tab */}
       {activeTab === 'overview' && (
         <div className="space-y-6">
-
-      {/* Progress Overview */}
+          {/* Progress Overview */}
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
         <Card className="bg-gradient-to-br from-card to-card/80 backdrop-blur-sm border-border/50 aviation-glow card-hover">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -214,6 +213,7 @@ export function StudentDashboard() {
           </CardContent>
         </Card>
       </div>
+        </div>
       )}
 
       {activeTab === 'scheduling' && (
