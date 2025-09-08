@@ -97,3 +97,43 @@ export interface AuditLog {
   entityId: string
   details: string
 }
+
+export interface InstructorAvailability {
+  id: string
+  instructorId: string
+  date: string
+  startTime: string
+  endTime: string
+  isRecurring: boolean
+  recurrencePattern?: 'weekly' | 'biweekly'
+  maxStudents: number
+  notes?: string
+  createdAt: string
+}
+
+export interface ScheduledLesson {
+  id: string
+  studentId: string
+  instructorId: string
+  availabilityId: string
+  date: string
+  startTime: string
+  endTime: string
+  type: 'flight' | 'ground'
+  aircraft?: string
+  status: 'scheduled' | 'confirmed' | 'completed' | 'cancelled'
+  lessonObjectives: string[]
+  notes?: string
+  scheduledAt: string
+  confirmedAt?: string
+  cancelledAt?: string
+  cancellationReason?: string
+}
+
+export interface TimeSlot {
+  start: string
+  end: string
+  available: boolean
+  scheduledLessonId?: string
+  studentName?: string
+}

@@ -1,51 +1,63 @@
-# Product Requirements Document: Flight School Lesson Recording System
+# Product Requirements Document: Flight School Student Management & Scheduling System
 
 ## Core Purpose & Success
 
-**Mission Statement**: Create an intuitive, comprehensive lesson recording form that enables flight instructors to efficiently document training progress, assess objectives, and maintain regulatory compliance while streamlining the workflow from draft to final lesson records.
+**Mission Statement**: Create an intuitive, comprehensive flight training management platform that enables instructors to efficiently document training progress, manage availability, schedule lessons, and maintain regulatory compliance while providing students with clear visibility into their training progression and easy lesson booking capabilities.
 
 **Success Indicators**: 
 - Instructors can create lesson records 50% faster than paper-based systems
 - Zero data loss between draft and final states
 - 100% compliance with FAA Part 61/141 documentation requirements
 - Reduced administrative overhead through automated objective tracking
+- 80% reduction in scheduling conflicts through availability management
+- Students can schedule lessons 24/7 without instructor intervention
+- Real-time availability visibility reduces back-and-forth communication
 
-**Experience Qualities**: Professional, Efficient, Trustworthy
+**Experience Qualities**: Professional, Efficient, Trustworthy, Accessible
 
 ## Project Classification & Approach
 
-**Complexity Level**: Light Application (multiple features with basic state management)
+**Complexity Level**: Complex Application (advanced functionality with scheduling, multi-user coordination, and real-time availability management)
 
-**Primary User Activity**: Creating and Acting - instructors actively input and assess training data
+**Primary User Activity**: Creating, Acting, and Interacting - instructors actively input training data and manage availability while students interact with scheduling systems
 
 ## Essential Features
 
-### 1. Dual-Mode Lesson Creation
+### 1. Lesson Scheduling & Availability Management
+- **Instructor Availability Calendar**: Monthly calendar view with time slot management up to 30 days in advance
+- **Student Lesson Booking**: Real-time availability viewing and lesson scheduling interface
+- **Recurring Availability**: Weekly/bi-weekly patterns with one-time override capabilities
+- **Schedule Conflict Management**: Automatic conflict detection and prevention
+- **Lesson Confirmation Workflow**: Scheduled → Confirmed → Completed states with instructor approval
+- **Purpose**: Streamline lesson coordination and eliminate scheduling conflicts
+- **Success Criteria**: Zero double-bookings, 95% student satisfaction with scheduling ease
+
+### 2. Dual-Mode Lesson Creation
 - **Flight Training Records**: Aircraft-specific data, flight time tracking, performance maneuvers
 - **Ground Instruction Records**: Classroom-based learning, regulatory knowledge, theoretical concepts
 - **Purpose**: Accommodate different training methodologies with appropriate data fields
 - **Success Criteria**: Users can seamlessly switch between modes with contextual form fields
 
-### 2. Draft-to-Final Workflow
+### 3. Draft-to-Final Workflow
 - **Draft State**: Allows incremental progress, auto-saves, incomplete objectives acceptable
 - **Final State**: Requires all mandatory assessments, locks record from editing, generates audit trail
 - **Purpose**: Enables flexible lesson documentation while ensuring compliance
 - **Success Criteria**: Clear status indicators, validation prevents premature finalization
 
-### 3. Dynamic Objective Management
+### 4. Dynamic Objective Management
 - **Quick-Add Common Objectives**: Pre-defined training objectives by lesson type
 - **Custom Objective Creation**: Flexible objective definition for unique training scenarios
 - **Assessment Framework**: Met/Partial/Not Met with detailed remarks capability
 - **Purpose**: Standardize training tracking while allowing instructor flexibility
 - **Success Criteria**: Intuitive objective addition, clear assessment visual feedback
 
-### 4. Student Context Integration
+### 5. Student Context Integration
 - **Real-time Student Information**: Progress tracking, training objectives, medical status
 - **Historical Context**: Previous lesson outcomes, areas needing improvement
 - **Purpose**: Provide instructors with complete student picture during lesson planning
 - **Success Criteria**: Relevant student data accessible without navigation
 
-### 5. Comprehensive Lesson Management
+### 6. Comprehensive Lesson Management
 - **Searchable Lesson History**: Filter by student, type, status, date range
 - **Batch Operations**: Quick access to draft lessons requiring finalization
 - **Detailed Lesson Views**: Complete lesson records with audit information

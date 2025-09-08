@@ -1,4 +1,6 @@
+import { useState } from 'react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { Button } from '@/components/ui/button'
 import { Progress } from '@/components/ui/progress'
 import { Badge } from '@/components/ui/badge'
 import { 
@@ -11,8 +13,11 @@ import {
   Airplane,
   Target
 } from '@phosphor-icons/react'
+import { LessonScheduler } from '@/components/scheduling'
 
 export function StudentDashboard() {
+  const [activeTab, setActiveTab] = useState('overview')
+  
   const studentProgress = {
     totalLessons: 40,
     completedLessons: 15,
@@ -57,6 +62,30 @@ export function StudentDashboard() {
         </h2>
         <p className="text-muted-foreground">Your journey to the skies - track every milestone</p>
       </div>
+
+      {/* Navigation */}
+      <div className="flex space-x-2 border-b border-border/30 pb-4">
+        <Button 
+          variant={activeTab === 'overview' ? 'default' : 'ghost'}
+          onClick={() => setActiveTab('overview')}
+          className="flex items-center gap-2 aviation-glow"
+        >
+          <Target className="h-4 w-4" />
+          Training Overview
+        </Button>
+        <Button 
+          variant={activeTab === 'scheduling' ? 'default' : 'ghost'}
+          onClick={() => setActiveTab('scheduling')}
+          className="flex items-center gap-2"
+        >
+          <Calendar className="h-4 w-4" />
+          Schedule Lessons
+        </Button>
+      </div>
+
+      {/* Content based on active tab */}
+      {activeTab === 'overview' && (
+        <div className="space-y-6">
 
       {/* Progress Overview */}
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
@@ -185,6 +214,11 @@ export function StudentDashboard() {
           </CardContent>
         </Card>
       </div>
+      )}
+
+      {activeTab === 'scheduling' && (
+        <LessonScheduler />
+      )}
     </div>
   )
 }

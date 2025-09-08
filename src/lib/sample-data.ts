@@ -1,5 +1,5 @@
 import { useKV } from '@github/spark/hooks'
-import { Student, Lesson, Endorsement, StageCheck, User } from '@/lib/types'
+import { Student, Lesson, Endorsement, StageCheck, User, Instructor, InstructorAvailability, ScheduledLesson } from '@/lib/types'
 import { useEffect } from 'react'
 
 export function useSampleData() {
@@ -8,6 +8,9 @@ export function useSampleData() {
   const [endorsements, setEndorsements] = useKV<Endorsement[]>('endorsements', [])
   const [stageChecks, setStageChecks] = useKV<StageCheck[]>('stage-checks', [])
   const [users, setUsers] = useKV<User[]>('users', [])
+  const [instructors, setInstructors] = useKV<Instructor[]>('instructors', [])
+  const [availabilities, setAvailabilities] = useKV<InstructorAvailability[]>('instructor-availabilities', [])
+  const [scheduledLessons, setScheduledLessons] = useKV<ScheduledLesson[]>('scheduled-lessons', [])
 
   useEffect(() => {
     // Initialize users if empty
@@ -39,6 +42,46 @@ export function useSampleData() {
         }
       ]
       setUsers(sampleUsers)
+    }
+
+    // Initialize instructors if empty
+    if (instructors.length === 0) {
+      const sampleInstructors: Instructor[] = [
+        {
+          id: 'instructor1',
+          userId: 'user-instructor1',
+          certificateNumber: 'CFI-123456',
+          firstName: 'Sarah',
+          lastName: 'Johnson',
+          email: 'sarah.johnson@skywinds.com',
+          ratings: ['CFI', 'CFII', 'MEI'],
+          expirationDate: '2025-06-15',
+          status: 'active'
+        },
+        {
+          id: 'instructor2',
+          userId: 'user-instructor2',
+          certificateNumber: 'CFI-789012',
+          firstName: 'Mike',
+          lastName: 'Davis',
+          email: 'mike.davis@skywinds.com',
+          ratings: ['CFI', 'CFII'],
+          expirationDate: '2025-08-22',
+          status: 'active'
+        },
+        {
+          id: 'instructor3',
+          userId: 'user-instructor3',
+          certificateNumber: 'CFI-345678',
+          firstName: 'Lisa',
+          lastName: 'Chen',
+          email: 'lisa.chen@skywinds.com',
+          ratings: ['CFI', 'MEI'],
+          expirationDate: '2025-04-10',
+          status: 'active'
+        }
+      ]
+      setInstructors(sampleInstructors)
     }
 
     // Only initialize if no data exists
@@ -276,7 +319,94 @@ export function useSampleData() {
       ]
       setStageChecks(sampleStageChecks)
     }
-  }, [students.length, lessons.length, endorsements.length, stageChecks.length, users.length, setStudents, setLessons, setEndorsements, setStageChecks, setUsers])
 
-  return { students, lessons, endorsements, stageChecks, users }
+    // Initialize sample availability data if empty
+    if (availabilities.length === 0 && instructors.length > 0) {
+      const today = new Date()
+      const sampleAvailabilities: InstructorAvailability[] = []
+      
+      // Create availability for next 30 days for each instructor
+      for (let i = 0; i < 30; i++) {
+        const date = new Date(today)
+        date.setDate(today.getDate() + i)
+        const dateString = date.toISOString().split('T')[0]
+        
+        // Skip weekends for some variety
+        if (date.getDay() === 0 || date.getDay() === 6) continue
+        
+        instructors.forEach((instructor, idx) => {
+          // Create morning availability
+          if (Math.random() > 0.3) { // 70% chance
+            sampleAvailabilities.push({
+              id: `avail-${instructor.id}-${i}-morning`,
+              instructorId: instructor.id,
+              date: dateString,
+              startTime: '09:00',
+              endTime: '12:00',
+              isRecurring: false,
+              maxStudents: 1,
+              notes: 'Morning availability',
+              createdAt: new Date().toISOString()
+            })
+          }
+          
+          // Create afternoon availability
+          if (Math.random() > 0.4) { // 60% chance
+            sampleAvailabilities.push({
+              id: `avail-${instructor.id}-${i}-afternoon`,
+              instructorId: instructor.id,
+              date: dateString,
+              startTime: '13:00',
+              endTime: '17:00',
+              isRecurring: false,
+              maxStudents: 1,
+              notes: 'Afternoon availability',
+              createdAt: new Date().toISOString()
+            })
+          }
+        })
+      }
+      
+      setAvailabilities(sampleAvailabilities)
+    }
+
+    // Initialize sample scheduled lessons if empty
+    if (scheduledLessons.length === 0 && students.length > 0 && instructors.length > 0) {
+      const sampleScheduledLessons: ScheduledLesson[] = [
+        {
+          id: 'scheduled-1',
+          studentId: '1',
+          instructorId: 'instructor1',
+          availabilityId: 'avail-instructor1-1-morning',
+          date: new Date(Date.now() + 2 * 24 * 60 * 60 * 1000).toISOString().split('T')[0], // 2 days from now
+          startTime: '09:00',
+          endTime: '10:30',
+          type: 'flight',
+          aircraft: 'N12345',
+          status: 'scheduled',
+          lessonObjectives: ['Pre-flight inspection', 'Takeoff procedures', 'Traffic pattern'],
+          notes: 'First solo preparation',
+          scheduledAt: new Date().toISOString()
+        },
+        {
+          id: 'scheduled-2',
+          studentId: '2',
+          instructorId: 'instructor2',
+          availabilityId: 'avail-instructor2-3-afternoon',
+          date: new Date(Date.now() + 4 * 24 * 60 * 60 * 1000).toISOString().split('T')[0], // 4 days from now
+          startTime: '14:00',
+          endTime: '15:00',
+          type: 'ground',
+          status: 'confirmed',
+          lessonObjectives: ['Weather theory', 'Chart reading'],
+          notes: 'Weather briefing session',
+          scheduledAt: new Date().toISOString(),
+          confirmedAt: new Date().toISOString()
+        }
+      ]
+      setScheduledLessons(sampleScheduledLessons)
+    }
+  }, [students.length, lessons.length, endorsements.length, stageChecks.length, users.length, instructors.length, availabilities.length, scheduledLessons.length, setStudents, setLessons, setEndorsements, setStageChecks, setUsers, setInstructors, setAvailabilities, setScheduledLessons])
+
+  return { students, lessons, endorsements, stageChecks, users, instructors, availabilities, scheduledLessons }
 }

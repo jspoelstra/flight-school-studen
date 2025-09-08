@@ -19,6 +19,7 @@ import {
 import { LessonsManager } from '@/components/lessons'
 import { StudentDetailView } from '@/components/students'
 import { EndorsementsManager } from '@/components/endorsements'
+import { LessonScheduler } from '@/components/scheduling'
 import { useSampleData } from '@/lib/sample-data'
 import { useKV } from '@github/spark/hooks'
 import { Lesson, Student } from '@/lib/types'
@@ -134,6 +135,14 @@ export function InstructorDashboard() {
           >
             <Certificate className="h-4 w-4" />
             Endorsements
+          </Button>
+          <Button 
+            variant={activeTab === 'scheduling' ? 'default' : 'ghost'}
+            onClick={() => setActiveTab('scheduling')}
+            className="flex items-center gap-2"
+          >
+            <Calendar className="h-4 w-4" />
+            Scheduling
           </Button>
         </div>
 
@@ -361,6 +370,10 @@ export function InstructorDashboard() {
 
         {activeTab === 'endorsements' && (
           <EndorsementsManager />
+        )}
+
+        {activeTab === 'scheduling' && (
+          <LessonScheduler />
         )}
       </div>
     </div>

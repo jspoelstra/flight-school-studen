@@ -11,7 +11,8 @@ import {
   LogOut,
   User,
   Compass,
-  CloudSun
+  CloudSun,
+  Calendar
 } from '@phosphor-icons/react'
 import { cn } from '@/lib/utils'
 import slingIcon from '@/assets/images/sling-icon.jpg'
@@ -51,6 +52,12 @@ const navigation: NavItem[] = [
     icon: Award,
     href: '/endorsements',
     roles: ['instructor', 'admin']
+  },
+  {
+    label: 'Scheduling',
+    icon: Calendar,
+    href: '/scheduling',
+    roles: ['student', 'instructor']
   },
   {
     label: 'My Progress',
