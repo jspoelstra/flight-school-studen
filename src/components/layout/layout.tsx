@@ -1,6 +1,7 @@
 import { ReactNode } from 'react'
 import { Button } from '@/components/ui/button'
 import { useAuth } from '@/lib/auth'
+import { useNavigation } from '@/lib/navigation'
 import { Toaster } from '@/components/ui/sonner'
 import { 
   Users, 
@@ -75,6 +76,7 @@ const navigation: NavItem[] = [
 
 export function Layout({ children }: LayoutProps) {
   const { user, logout } = useAuth()
+  const { currentRoute, navigate } = useNavigation()
 
   if (!user) return null
 
@@ -153,10 +155,12 @@ export function Layout({ children }: LayoutProps) {
                 <li key={item.href}>
                   <Button
                     variant="ghost"
+                    onClick={() => navigate(item.href)}
                     className={cn(
                       "w-full justify-start gap-3 text-left",
                       "hover:bg-accent/20 hover:text-accent transition-all duration-200",
-                      "border border-transparent hover:border-accent/30"
+                      "border border-transparent hover:border-accent/30",
+                      currentRoute === item.href && "bg-accent/10 text-accent border-accent/30"
                     )}
                   >
                     <item.icon className="h-4 w-4" />
