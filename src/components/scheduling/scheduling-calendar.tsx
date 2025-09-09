@@ -9,7 +9,8 @@ import {
   Plus,
   Clock,
   User,
-  Airplane
+  Airplane,
+  Calendar
 } from '@phosphor-icons/react'
 import { cn } from '@/lib/utils'
 import { ScheduledLesson, InstructorAvailability as IAvailability, TimeSlot } from '@/lib/types'
@@ -103,6 +104,14 @@ export function SchedulingCalendar({
     
     if (mode === 'instructor' && onManageAvailability) {
       onManageAvailability(day.date.toISOString().split('T')[0])
+    } else if (mode === 'student' && day.hasAvailability && onScheduleLesson) {
+      // For students, trigger the lesson scheduling with a default time slot
+      const defaultTimeSlot: TimeSlot = {
+        start: '09:00',
+        end: '10:00',
+        available: true
+      }
+      onScheduleLesson(day.date.toISOString().split('T')[0], defaultTimeSlot)
     }
   }
 
@@ -199,6 +208,18 @@ export function SchedulingCalendar({
                       +{day.scheduledLessons.length - 2} more
                     </div>
                   )}
+                </div>
+              )}
+              
+              {/* Enhanced click indicator for students */}
+              {mode === 'student' && day.hasAvailability && day.isCurrentMonth && day.date >= new Date() && (
+                <div className="absolute inset-0 rounded-md border-2 border-green-500/30 bg-green-500/5 hover:bg-green-500/10 transition-colors z-10 flex items-center justify-center">
+                  <div className="absolute bottom-1 left-1 text-xs text-green-600 font-medium">
+                    Click to book
+                  </div>
+                  <div className="text-green-600 opacity-70">
+                    <Calendar className="h-6 w-6" />
+                  </div>
                 </div>
               )}
               

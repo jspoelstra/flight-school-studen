@@ -8,7 +8,7 @@ import { AdminDashboard } from '@/components/dashboard/admin-dashboard'
 import { StudentsPage } from '@/components/students'
 import { LessonsManager } from '@/components/lessons'
 import { EndorsementsManager } from '@/components/endorsements'
-import { SchedulingCalendar } from '@/components/scheduling'
+import { SchedulingCalendar, StudentScheduling } from '@/components/scheduling'
 
 function AppContent() {
   const { user, isAuthenticated } = useAuth()
@@ -54,8 +54,10 @@ function AppContent() {
         return <div className="text-center text-muted-foreground">Access denied</div>
       
       case '/scheduling':
-        if (['student', 'instructor'].includes(user?.role || '')) {
-          return <SchedulingCalendar />
+        if (user?.role === 'student') {
+          return <StudentScheduling studentId={user.id} />
+        } else if (user?.role === 'instructor') {
+          return <SchedulingCalendar mode="instructor" instructorId={user.id} />
         }
         return <div className="text-center text-muted-foreground">Access denied</div>
       

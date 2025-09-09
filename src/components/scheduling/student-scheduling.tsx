@@ -34,6 +34,7 @@ interface SchedulingForm {
   aircraft: string
   notes: string
   lessonObjectives: string[]
+  selectedTimeSlot: string
 }
 
 const defaultForm: SchedulingForm = {
@@ -42,7 +43,8 @@ const defaultForm: SchedulingForm = {
   type: 'flight',
   aircraft: '',
   notes: '',
-  lessonObjectives: []
+  lessonObjectives: [],
+  selectedTimeSlot: ''
 }
 
 const lessonObjectiveOptions = [
@@ -123,34 +125,79 @@ export function StudentScheduling({ studentId }: StudentSchedulingProps) {
   }
 
   const handleScheduleLesson = (date: string, timeSlot: TimeSlot) => {
-    if (!timeSlot.available) return
+    if (!timeSlot.available) {
+      toast.error('This time slot is not available')
+      return
+    }
     
     // Find the availability that contains this time slot
     const availability = availabilities.find(avail => 
       avail.date === date &&
       timeSlot.start >= avail.startTime &&
-      timeSlot.end <= avail.endTime
+      timeSlot.start < avail.endTime
     )
     
-    if (!availability) return
+    if (!availability) {
+      // If no specific availability found, use the first one for the date
+      const dayAvailabilities = availabilities.filter(avail => avail.date === date)
+      
+      if (dayAvailabilities.length > 0) {
+        const firstAvailability = dayAvailabilities[0]
+        setSelectedAvailability(firstAvailability)
+        setSelectedDate(date)
+        setForm(prev => ({
+          ...prev,
+          availabilityId: firstAvailability.id,
+          instructorId: firstAvailability.instructorId,
+          selectedTimeSlot: firstAvailability.startTime
+        }))
+        setIsDialogOpen(true)
+        toast.success('Opening lesson booking form...')
+        return
+      }
+      toast.error('No availability found for this date')
+      return
+    }
     
     setSelectedAvailability(availability)
     setSelectedDate(date)
     setForm(prev => ({
       ...prev,
       availabilityId: availability.id,
-      instructorId: availability.instructorId
+      instructorId: availability.instructorId,
+      selectedTimeSlot: availability.startTime
     }))
     setIsDialogOpen(true)
+    toast.success('Opening lesson booking form...')
+  }
   }
 
   const handleConfirmScheduling = () => {
-    if (!selectedAvailability || !selectedDate) return
-    
-    if (!form.type || (!form.aircraft && form.type === 'flight')) {
-      toast.error('Please fill in all required fields')
+    if (!selectedAvailability || !selectedDate) {
+      toast.error('Please select a date and instructor availability')
       return
     }
+    
+    if (!form.type) {
+      toast.error('Please select a lesson type')
+      return
+    }
+    
+    if (form.type === 'flight' && !form.aircraft) {
+      toast.error('Please select an aircraft for flight lessons')
+      return
+    }
+    
+    if (!form.selectedTimeSlot) {
+      toast.error('Please select a time slot')
+      return
+    }
+
+    // Calculate lesson duration (default 1 hour)
+    const startTime = form.selectedTimeSlot
+    const [startHour, startMinute] = startTime.split(':').map(Number)
+    const endHour = startHour + 1
+    const endTime = `${endHour.toString().padStart(2, '0')}:${startMinute.toString().padStart(2, '0')}`
 
     const newLesson: ScheduledLesson = {
       id: `lesson-${Date.now()}`,
@@ -158,8 +205,8 @@ export function StudentScheduling({ studentId }: StudentSchedulingProps) {
       instructorId: form.instructorId,
       availabilityId: form.availabilityId,
       date: selectedDate,
-      startTime: '09:00', // This would be selected from time slot
-      endTime: '10:00',   // This would be calculated
+      startTime: startTime,
+      endTime: endTime,
       type: form.type,
       aircraft: form.aircraft,
       status: 'scheduled',
@@ -345,7 +392,12 @@ export function StudentScheduling({ studentId }: StudentSchedulingProps) {
       </div>
 
       {/* Scheduling Dialog */}
-      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+      <Dialog open={isDialogOpen} onOpenChange={(open) => {
+        setIsDialogOpen(open)
+        if (!open) {
+          handleCloseDialog()
+        }
+      }}>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
             <DialogTitle>Schedule Lesson</DialogTitle>
@@ -363,6 +415,27 @@ export function StudentScheduling({ studentId }: StudentSchedulingProps) {
                 <div className="text-sm text-muted-foreground">
                   {formatTime(selectedAvailability.startTime)} - {formatTime(selectedAvailability.endTime)}
                 </div>
+              </div>
+
+              <div className="space-y-2">
+                <Label>Time Slot</Label>
+                <Select value={form.selectedTimeSlot} onValueChange={(value) => setForm(prev => ({ ...prev, selectedTimeSlot: value }))}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select time" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {getAvailableSlots(selectedDate).map((slot, index) => (
+                      <SelectItem 
+                        key={index} 
+                        value={slot.start}
+                        disabled={!slot.available}
+                      >
+                        {formatTime(slot.start)} - {formatTime(slot.end)}
+                        {!slot.available && ' (Booked)'}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
 
               <div className="space-y-2">
