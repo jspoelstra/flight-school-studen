@@ -48,16 +48,11 @@ const defaultForm: SchedulingForm = {
 }
 
 const lessonObjectiveOptions = [
-  'Pre-flight inspection',
-  'Start-up procedures',
-  'Taxi operations',
-  'Takeoff procedures',
-  'Traffic pattern',
-  'Landing procedures',
-  'Emergency procedures',
+  'Pattern work',
+  'Takeoffs and landings',
   'Navigation',
-  'Radio communications',
-  'Steep turns',
+  'Radio communication',
+  'Emergency procedures',
   'Stalls',
   'Slow flight',
   'Ground reference maneuvers'
@@ -69,166 +64,113 @@ export function StudentScheduling({ studentId }: StudentSchedulingProps) {
   const [selectedAvailability, setSelectedAvailability] = useState<InstructorAvailability | null>(null)
   const [selectedDate, setSelectedDate] = useState<string>('')
   
-  // Get KV stores for updating data
-  const [, setScheduledLessonsKV] = useKV<ScheduledLesson[]>('scheduled-lessons', [])
+  const [scheduledLessons, setScheduledLessons] = useKV<ScheduledLesson[]>('scheduled-lessons', [])
+  const [instructorAvailability, setInstructorAvailability] = useKV<InstructorAvailability[]>('instructor-availability', [])
   
-  // Get current data from sample data
-  const { instructors, availabilities, scheduledLessons } = useSampleData()
+  const { instructors } = useSampleData()
 
-  // Get student's scheduled lessons
-  const studentLessons = scheduledLessons.filter(lesson => lesson.studentId === studentId)
+  useEffect(() => {
+    // Initialize with sample availability data
+    if (instructorAvailability.length === 0) {
+      const sampleAvailability: InstructorAvailability[] = [
+        {
+          id: '1',
+          instructorId: 'instructor-1',
+          date: '2024-01-15',
+          startTime: '09:00',
+          endTime: '17:00',
+          availableSlots: [
+            { start: '09:00', end: '11:00', available: true },
+            { start: '11:00', end: '13:00', available: true },
+            { start: '13:00', end: '15:00', available: false },
+            { start: '15:00', end: '17:00', available: true }
+          ]
+        },
+        {
+          id: '2',
+          instructorId: 'instructor-2',
+          date: '2024-01-15',
+          startTime: '08:00',
+          endTime: '16:00',
+          availableSlots: [
+            { start: '08:00', end: '10:00', available: true },
+            { start: '10:00', end: '12:00', available: true },
+            { start: '14:00', end: '16:00', available: true }
+          ]
+        },
+        {
+          id: '3',
+          instructorId: 'instructor-1',
+          date: '2024-01-16',
+          startTime: '10:00',
+          endTime: '18:00',
+          availableSlots: [
+            { start: '10:00', end: '12:00', available: true },
+            { start: '12:00', end: '14:00', available: false },
+            { start: '14:00', end: '16:00', available: true },
+            { start: '16:00', end: '18:00', available: true }
+          ]
+        }
+      ]
+      setInstructorAvailability(sampleAvailability)
+    }
+  }, [instructorAvailability.length, setInstructorAvailability])
 
-  // Get available time slots for a specific date
-  const getAvailableSlots = (date: string): TimeSlot[] => {
-    const dayAvailabilities = availabilities.filter(avail => avail.date === date)
-    const dayLessons = scheduledLessons.filter(lesson => lesson.date === date)
-    
-    const slots: TimeSlot[] = []
-    
-    dayAvailabilities.forEach(availability => {
-      // Generate hourly slots within availability window
-      const startTime = new Date(`${date}T${availability.startTime}:00`)
-      const endTime = new Date(`${date}T${availability.endTime}:00`)
-      
-      const current = new Date(startTime)
-      while (current < endTime) {
-        const slotStart = current.toTimeString().substring(0, 5)
-        const slotEnd = new Date(current.getTime() + 60 * 60 * 1000).toTimeString().substring(0, 5)
-        
-        // Check if this slot is already booked
-        const isBooked = dayLessons.some(lesson => 
-          lesson.instructorId === availability.instructorId &&
-          lesson.startTime === slotStart &&
-          lesson.status !== 'cancelled'
-        )
-        
-        // Get the booked lesson if it exists
-        const bookedLesson = dayLessons.find(lesson => 
-          lesson.instructorId === availability.instructorId &&
-          lesson.startTime === slotStart &&
-          lesson.status !== 'cancelled'
-        )
-        
-        slots.push({
-          start: slotStart,
-          end: slotEnd,
-          available: !isBooked,
-          scheduledLessonId: bookedLesson?.id,
-          studentName: bookedLesson ? 'Booked' : undefined
-        })
-        
-        current.setHours(current.getHours() + 1)
-      }
+  const getInstructorName = (instructorId: string) => {
+    const instructor = instructors.find(i => i.id === instructorId)
+    return instructor ? instructor.name : 'Unknown Instructor'
+  }
+
+  const formatDate = (dateStr: string) => {
+    const date = new Date(dateStr)
+    return date.toLocaleDateString('en-US', { 
+      weekday: 'long', 
+      year: 'numeric', 
+      month: 'long', 
+      day: 'numeric' 
     })
-    
-    return slots.sort((a, b) => a.start.localeCompare(b.start))
   }
 
-  const handleScheduleLesson = (date: string, timeSlot: TimeSlot) => {
-    if (!timeSlot.available) {
-      toast.error('This time slot is not available')
-      return
-    }
-    
-    // Find the availability that contains this time slot
-    const availability = availabilities.find(avail => 
-      avail.date === date &&
-      timeSlot.start >= avail.startTime &&
-      timeSlot.start < avail.endTime
-    )
-    
-    if (!availability) {
-      // If no specific availability found, use the first one for the date
-      const dayAvailabilities = availabilities.filter(avail => avail.date === date)
-      
-      if (dayAvailabilities.length > 0) {
-        const firstAvailability = dayAvailabilities[0]
-        setSelectedAvailability(firstAvailability)
-        setSelectedDate(date)
-        setForm(prev => ({
-          ...prev,
-          availabilityId: firstAvailability.id,
-          instructorId: firstAvailability.instructorId,
-          selectedTimeSlot: firstAvailability.startTime
-        }))
-        setIsDialogOpen(true)
-        toast.success('Opening lesson booking form...')
-        return
-      }
-      toast.error('No availability found for this date')
-      return
-    }
-    
-    setSelectedAvailability(availability)
+  const formatTime = (timeStr: string) => {
+    const [hours, minutes] = timeStr.split(':')
+    const hour = parseInt(hours)
+    const ampm = hour >= 12 ? 'PM' : 'AM'
+    const displayHour = hour > 12 ? hour - 12 : hour === 0 ? 12 : hour
+    return `${displayHour}:${minutes} ${ampm}`
+  }
+
+  const getAvailableSlots = (date: string) => {
+    const availability = instructorAvailability.filter(av => av.date === date)
+    return availability.flatMap(av => av.availableSlots || [])
+  }
+
+  const handleDateSelect = (date: string) => {
     setSelectedDate(date)
-    setForm(prev => ({
-      ...prev,
-      availabilityId: availability.id,
-      instructorId: availability.instructorId,
-      selectedTimeSlot: availability.startTime
-    }))
-    setIsDialogOpen(true)
-    toast.success('Opening lesson booking form...')
-  }
-  }
-
-  const handleConfirmScheduling = () => {
-    if (!selectedAvailability || !selectedDate) {
-      toast.error('Please select a date and instructor availability')
-      return
-    }
     
-    if (!form.type) {
-      toast.error('Please select a lesson type')
-      return
-    }
+    // Find availability for this date
+    const availabilityForDate = instructorAvailability.filter(av => av.date === date)
     
-    if (form.type === 'flight' && !form.aircraft) {
-      toast.error('Please select an aircraft for flight lessons')
-      return
-    }
-    
-    if (!form.selectedTimeSlot) {
-      toast.error('Please select a time slot')
+    if (availabilityForDate.length === 0) {
+      toast.error('No instructors available on this date')
       return
     }
 
-    // Calculate lesson duration (default 1 hour)
-    const startTime = form.selectedTimeSlot
-    const [startHour, startMinute] = startTime.split(':').map(Number)
-    const endHour = startHour + 1
-    const endTime = `${endHour.toString().padStart(2, '0')}:${startMinute.toString().padStart(2, '0')}`
-
-    const newLesson: ScheduledLesson = {
-      id: `lesson-${Date.now()}`,
-      studentId,
-      instructorId: form.instructorId,
-      availabilityId: form.availabilityId,
-      date: selectedDate,
-      startTime: startTime,
-      endTime: endTime,
-      type: form.type,
-      aircraft: form.aircraft,
-      status: 'scheduled',
-      lessonObjectives: form.lessonObjectives,
-      notes: form.notes,
-      scheduledAt: new Date().toISOString()
-    }
-
-    setScheduledLessonsKV(prev => [...prev, newLesson])
-    toast.success('Lesson scheduled successfully!')
-    handleCloseDialog()
-  }
-
-  const handleCancelLesson = (lessonId: string) => {
-    setScheduledLessonsKV(prev => 
-      prev.map(lesson => 
-        lesson.id === lessonId 
-          ? { ...lesson, status: 'cancelled' as const, cancelledAt: new Date().toISOString() }
-          : lesson
-      )
+    // For now, select the first available instructor
+    const firstAvailable = availabilityForDate.find(av => 
+      av.availableSlots?.some(slot => slot.available)
     )
-    toast.success('Lesson cancelled')
+    
+    if (firstAvailable) {
+      setSelectedAvailability(firstAvailable)
+      setForm(prev => ({ 
+        ...prev, 
+        instructorId: firstAvailable.instructorId,
+        availabilityId: firstAvailable.id 
+      }))
+      setIsDialogOpen(true)
+    } else {
+      toast.error('No available slots on this date')
+    }
   }
 
   const handleCloseDialog = () => {
@@ -238,25 +180,57 @@ export function StudentScheduling({ studentId }: StudentSchedulingProps) {
     setForm(defaultForm)
   }
 
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('en-US', { 
-      weekday: 'long', 
-      month: 'long', 
-      day: 'numeric' 
-    })
+  const handleConfirmScheduling = () => {
+    if (!selectedAvailability || !form.selectedTimeSlot) {
+      toast.error('Please select a time slot')
+      return
+    }
+
+    if (form.lessonObjectives.length === 0) {
+      toast.error('Please select at least one lesson objective')
+      return
+    }
+
+    const newLesson: ScheduledLesson = {
+      id: Date.now().toString(),
+      studentId,
+      instructorId: selectedAvailability.instructorId,
+      date: selectedDate,
+      startTime: form.selectedTimeSlot,
+      endTime: getSlotEndTime(form.selectedTimeSlot),
+      type: form.type,
+      status: 'scheduled',
+      aircraft: form.aircraft || undefined,
+      lessonObjectives: form.lessonObjectives,
+      notes: form.notes || undefined,
+      createdAt: new Date().toISOString()
+    }
+
+    setScheduledLessons(prev => [...prev, newLesson])
+    
+    // Update availability to mark slot as booked
+    setInstructorAvailability(prev => prev.map(av => {
+      if (av.id === selectedAvailability.id) {
+        return {
+          ...av,
+          availableSlots: av.availableSlots?.map(slot => 
+            slot.start === form.selectedTimeSlot 
+              ? { ...slot, available: false }
+              : slot
+          ) || []
+        }
+      }
+      return av
+    }))
+
+    toast.success('Lesson scheduled successfully!')
+    handleCloseDialog()
   }
 
-  const formatTime = (time: string) => {
-    const [hours, minutes] = time.split(':')
-    const hour = parseInt(hours)
-    const ampm = hour >= 12 ? 'PM' : 'AM'
-    const displayHour = hour === 0 ? 12 : hour > 12 ? hour - 12 : hour
-    return `${displayHour}:${minutes} ${ampm}`
-  }
-
-  const getInstructorName = (instructorId: string) => {
-    const instructor = instructors.find(inst => inst.id === instructorId)
-    return instructor ? `${instructor.firstName} ${instructor.lastName}` : 'Unknown Instructor'
+  const getSlotEndTime = (startTime: string) => {
+    const [hours, minutes] = startTime.split(':').map(Number)
+    const endHour = hours + 2 // Assuming 2-hour lessons
+    return `${endHour.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`
   }
 
   return (
@@ -271,127 +245,80 @@ export function StudentScheduling({ studentId }: StudentSchedulingProps) {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Calendar */}
-        <div className="lg:col-span-2">
-          <SchedulingCalendar
-            mode="student"
-            studentId={studentId}
-            onScheduleLesson={handleScheduleLesson}
-          />
-        </div>
-
-        {/* Upcoming Lessons */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <CalendarIcon className="h-5 w-5" />
-              Upcoming Lessons
-            </CardTitle>
-            <CardDescription>
-              Your scheduled lessons
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            {studentLessons.filter(lesson => lesson.status !== 'cancelled').length === 0 ? (
+      {/* My Upcoming Lessons */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <CalendarIcon className="h-5 w-5" />
+            My Upcoming Lessons
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-3">
+            {scheduledLessons
+              .filter(lesson => lesson.studentId === studentId)
+              .filter(lesson => new Date(lesson.date) >= new Date())
+              .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
+              .slice(0, 5)
+              .map(lesson => {
+                const instructor = instructors.find(i => i.id === lesson.instructorId)
+                return (
+                  <div key={lesson.id} className="flex items-center justify-between p-3 border rounded-lg">
+                    <div className="flex items-center gap-3">
+                      <div className="flex items-center justify-center w-10 h-10 bg-primary/10 rounded-lg">
+                        {lesson.type === 'flight' ? 
+                          <Airplane className="h-5 w-5 text-primary" /> : 
+                          <BookOpen className="h-5 w-5 text-primary" />
+                        }
+                      </div>
+                      <div>
+                        <div className="font-medium">
+                          {lesson.type === 'flight' ? 'Flight Lesson' : 'Ground Lesson'}
+                        </div>
+                        <div className="text-sm text-muted-foreground">
+                          {formatDate(lesson.date)} at {formatTime(lesson.startTime)}
+                        </div>
+                        <div className="text-sm text-muted-foreground">
+                          with {instructor?.name || 'Unknown Instructor'}
+                        </div>
+                      </div>
+                    </div>
+                    <Badge variant={lesson.status === 'scheduled' ? 'default' : 'secondary'}>
+                      {lesson.status}
+                    </Badge>
+                  </div>
+                )
+              })}
+            {scheduledLessons.filter(lesson => lesson.studentId === studentId).length === 0 && (
               <div className="text-center py-8 text-muted-foreground">
                 <CalendarIcon className="h-12 w-12 mx-auto mb-4 opacity-50" />
-                <p>No lessons scheduled</p>
-                <p className="text-sm">Click on available dates in the calendar to schedule</p>
-              </div>
-            ) : (
-              <div className="space-y-3">
-                {studentLessons
-                  .filter(lesson => lesson.status !== 'cancelled')
-                  .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
-                  .map(lesson => (
-                  <div key={lesson.id} className="flex items-center justify-between p-4 border rounded-lg">
-                    <div className="flex items-center gap-4">
-                      <div className="flex-shrink-0">
-                        {lesson.type === 'flight' ? (
-                          <Airplane className="h-5 w-5 text-blue-500" />
-                        ) : (
-                          <BookOpen className="h-5 w-5 text-green-500" />
-                        )}
-                      </div>
-                      
-                      <div>
-                        <div className="font-medium">{formatDate(lesson.date)}</div>
-                        <div className="text-sm text-muted-foreground flex items-center gap-2">
-                          <Clock className="h-3 w-3" />
-                          {formatTime(lesson.startTime)} - {formatTime(lesson.endTime)}
-                        </div>
-                        <div className="text-sm text-muted-foreground flex items-center gap-2">
-                          <User className="h-3 w-3" />
-                          {getInstructorName(lesson.instructorId)}
-                        </div>
-                      </div>
-                    </div>
-
-                    <div className="flex items-center gap-2">
-                      <Badge variant={lesson.status === 'confirmed' ? 'default' : 'secondary'}>
-                        {lesson.status}
-                      </Badge>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => handleCancelLesson(lesson.id)}
-                        className="text-destructive hover:text-destructive"
-                      >
-                        <X className="h-4 w-4" />
-                      </Button>
-                    </div>
-                  </div>
-                ))}
+                <p>No lessons scheduled yet</p>
+                <p className="text-sm">Click on available dates below to schedule your first lesson</p>
               </div>
             )}
-          </CardContent>
-        </Card>
+          </div>
+        </CardContent>
+      </Card>
 
-        {/* Available Instructors */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <User className="h-5 w-5" />
-              Available Instructors
-            </CardTitle>
-            <CardDescription>
-              Instructors with upcoming availability
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-3">
-              {instructors
-                .filter(instructor => 
-                  availabilities.some(avail => 
-                    avail.instructorId === instructor.id &&
-                    new Date(avail.date) >= new Date()
-                  )
-                )
-                .map(instructor => {
-                  const instructorAvailabilities = availabilities.filter(avail => 
-                    avail.instructorId === instructor.id &&
-                    new Date(avail.date) >= new Date()
-                  )
-                  
-                  return (
-                    <div key={instructor.id} className="p-3 border rounded-lg">
-                      <div className="font-medium">{instructor.firstName} {instructor.lastName}</div>
-                      <div className="text-sm text-muted-foreground">
-                        {instructor.ratings.join(', ')}
-                      </div>
-                      <div className="text-sm text-muted-foreground mt-1">
-                        {instructorAvailabilities.length} available slot{instructorAvailabilities.length !== 1 ? 's' : ''}
-                      </div>
-                    </div>
-                  )
-                })}
-            </div>
-          </CardContent>
-        </Card>
-      </div>
+      {/* Calendar */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Available Dates</CardTitle>
+          <CardDescription>
+            Click on an available date to schedule a lesson
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <SchedulingCalendar 
+            mode="student"
+            onDateSelect={handleDateSelect}
+            availableDates={instructorAvailability.map(av => av.date)}
+            bookedDates={scheduledLessons.map(lesson => lesson.date)}
+          />
+        </CardContent>
+      </Card>
 
-      {/* Scheduling Dialog */}
+      {/* Lesson Scheduling Dialog */}
       <Dialog open={isDialogOpen} onOpenChange={(open) => {
         setIsDialogOpen(open)
         if (!open) {
@@ -453,15 +380,15 @@ export function StudentScheduling({ studentId }: StudentSchedulingProps) {
 
               {form.type === 'flight' && (
                 <div className="space-y-2">
-                  <Label>Aircraft</Label>
+                  <Label>Aircraft (Optional)</Label>
                   <Select value={form.aircraft} onValueChange={(value) => setForm(prev => ({ ...prev, aircraft: value }))}>
                     <SelectTrigger>
                       <SelectValue placeholder="Select aircraft" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="N12345">N12345 - Cessna 172</SelectItem>
-                      <SelectItem value="N67890">N67890 - Cessna 152</SelectItem>
-                      <SelectItem value="N24680">N24680 - Piper Cherokee</SelectItem>
+                      <SelectItem value="N123AB">N123AB - Cessna 172</SelectItem>
+                      <SelectItem value="N456CD">N456CD - Cessna 152</SelectItem>
+                      <SelectItem value="N789EF">N789EF - Piper Cherokee</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -469,7 +396,7 @@ export function StudentScheduling({ studentId }: StudentSchedulingProps) {
 
               <div className="space-y-2">
                 <Label>Lesson Objectives</Label>
-                <div className="grid grid-cols-1 gap-2 max-h-32 overflow-y-auto">
+                <div className="grid grid-cols-2 gap-2">
                   {lessonObjectiveOptions.map(objective => (
                     <label key={objective} className="flex items-center space-x-2 text-sm">
                       <input
@@ -488,7 +415,7 @@ export function StudentScheduling({ studentId }: StudentSchedulingProps) {
                             }))
                           }
                         }}
-                        className="rounded border-gray-300"
+                        className="rounded border-border"
                       />
                       <span>{objective}</span>
                     </label>
